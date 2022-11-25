@@ -1,29 +1,13 @@
-local lockpickCallback = nil
-
-AddEventHandler('qb-lockpick:client:openLockpick', function(callback)
-    lockpickCallback = callback
-    openLockpick(true)
-end)
-
-RegisterNUICallback('callback', function(data, cb)
-    openLockpick(false)
-    if lockpickCallback then
-        lockpickCallback(data.success)
-    end
-    cb('ok')
-end)
-
-RegisterNUICallback('exit', function(_, cb)
-    openLockpick(false)
-    cb('ok')
-end)
-
-openLockpick = function(bool)
-    SetNuiFocus(bool, bool)
-    SendNUIMessage({
-        action = "ui",
-        toggle = bool,
-    })
-    SetCursorLocation(0.5, 0.2)
-    lockpicking = bool
+local function openLockpick(cb)
+    cb(lib.skillCheck(Config.Difficulty))
 end
+
+-- Support for basic qb-lockpick
+AddEventHandler('qb-lockpick:client:openLockpick', openLockpick)
+
+-- Support for qb-lock forks like NoPixel
+AddEventHandler('kwk-lockpick:client:openLockpick', openLockpick)
+
+exports('StartLockPickCircle', function()
+    return lib.skillCheck(Config.Difficulty)
+end)
